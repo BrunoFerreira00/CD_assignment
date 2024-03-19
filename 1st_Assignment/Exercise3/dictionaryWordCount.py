@@ -110,7 +110,7 @@ def main():
     '''
     This line is commented since the dictionary is too big to be readable
     Since there are about 84 singular chars present, which means there's beetween 84^2 and 84*83 pairs
-    Because of this , it also could take a while until it finishes
+    Because of this , it also could take a while until it finishes compiling
     So just the 5 most common pairs are printed
     '''
     #pprint.pprint(dictionary)
