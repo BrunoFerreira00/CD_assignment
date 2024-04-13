@@ -15,4 +15,4 @@ def isPrime(num):
             return False
     return True
 
-print(primal(10,20)) # [11, 13, 17, 19]
+print(primal(10,20))

@@ -6,4 +6,4 @@ def mmc(a,b):
         total += 1
 
 
-print(mmc(136,255)) # 20
+print(mmc(136,255))

@@ -3,11 +3,12 @@
 # Get numpy for random choice
 import numpy as np
 import pprint
+import math 
 
 
 # Define the entropy function
 def entropy(p):
-    return -p * np.log2(p) - (1 - p) * np.log2(1 - p)
+    return -p * math.log2(p) 
 
 # Generate symbols based on the fmp where the keys will be the symbols and the values the probabilities ex: {'A': 0.5}
 def generateSymbols(FMP,N):
@@ -26,7 +27,7 @@ def calculateEntropy(FMP):
 
 FMP = {'A': 0.5, 'B': 0.3, 'C': 0.2}
 
-N = 100
+N = 20
 
 def main():
     gen = generateSymbols(FMP,N)

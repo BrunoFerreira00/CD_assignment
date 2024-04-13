@@ -5,4 +5,4 @@ def factorial(num):
         num -= 1
     return total
 
-print(factorial(5)) # 120
+print(factorial(5))

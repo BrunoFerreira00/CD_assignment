@@ -1,6 +1,8 @@
+# Exercise : 4 c)
+
 """
 Importing the modules:
-     - Generator since theres a function that generates passwords
+     - Generator since there's a function that generates passwords
      - gzip to compress the file
      - os to be able to get the size in bytes of the files
 """

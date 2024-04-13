@@ -5,4 +5,4 @@ def aritmeticProgression(n, u, r):
       list.append(u + (i - 1) * r)
    return list
 
-print(aritmeticProgression(5, 1, 2)) # [1, 3, 5, 7, 9]
+print(aritmeticProgression(5, 1, 2))

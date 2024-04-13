@@ -43,8 +43,10 @@ def generatePassword(N):
         passwords.append(password)
     return passwords
 
-# Hard coded the digits since there are only 10 digits
-FMP_DIGITS = {'0': 0.1, '1': 0.1, '2': 0.1, '3': 0.1, '4': 0.1, '5': 0.1, '6': 0.1, '7': 0.1, '8': 0.1, '9': 0.1}
+
+FMP_DIGITS = {}
+for i in range(10):
+    FMP_DIGITS[chr(i)] = 0.1
 
 # Make a for loop to get all 50 keys and 12 stars from euro million
 FMP_EURO_KEY = {}
