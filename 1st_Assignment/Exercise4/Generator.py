@@ -24,9 +24,9 @@ def generateEuroMilCode(N):
         # Set the length of keys and stars since it is fixed
         keyLength = 5
         starLength = 2
-        # Randomly choose the key and stars
-        key = ' '.join(np.random.choice(list(FMP_EURO_KEY.keys()), keyLength, p=list(FMP_EURO_KEY.values())))
-        stars = ' '.join(np.random.choice(list(FMP_EURO_STARS.keys()), starLength, p=list(FMP_EURO_STARS.values())))
+        # Randomly choose the key and stars, the 0 means 'replace = false' with it the function will not use the same number twice
+        key = ' '.join(np.random.choice(list(FMP_EURO_KEY.keys()), keyLength, 0 , list(FMP_EURO_KEY.values())))
+        stars = ' '.join(np.random.choice(list(FMP_EURO_STARS.keys()), starLength,0, list(FMP_EURO_STARS.values())))
         # Concatenate the key and stars
         code = "key " + key + " " + "stars " + stars
         codes.append(code)
@@ -46,7 +46,7 @@ def generatePassword(N):
 
 FMP_DIGITS = {}
 for i in range(10):
-    FMP_DIGITS[chr(i)] = 0.1
+    FMP_DIGITS[str(i)] = 0.1
 
 # Make a for loop to get all 50 keys and 12 stars from euro million
 FMP_EURO_KEY = {}

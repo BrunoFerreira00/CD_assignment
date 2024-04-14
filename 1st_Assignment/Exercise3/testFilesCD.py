@@ -2,6 +2,7 @@
 
 import os
 import math
+import matplotlib.pyplot as plt
 
 #Function to calculate the entropy = H(X) = -Σ p(x) * log2(p(x))
 def entropy(probability):
@@ -30,6 +31,13 @@ def histogram(text):
             result[char] = 1
     return result
 
+def plotHistogram(hist, filename):
+    plt.bar(hist.keys(), hist.values(), color='g')
+    plt.title("Histogram for file: " + filename)
+    plt.xlabel("Characters")
+    plt.ylabel("Frequency")
+    plt.show()
+
 #Function to open all files in the folder and calculate the entropy and histogram for each
 def openAllFiles():
     for files in os.listdir('TestFilesCD'):
@@ -40,9 +48,11 @@ def openAllFiles():
         print('Entropy for file ' + files + ' is: ' + str(entropy(probability.values())))
         print('Histogram for file ' + files + ' is: ' + str(hist))
         print('---------------------------------------------')
+        plotHistogram(hist, files)
 
 def main():
     openAllFiles()
+    plt.show()
 
 if __name__ == "__main__":
     main()

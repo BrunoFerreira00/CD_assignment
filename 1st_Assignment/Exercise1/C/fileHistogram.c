@@ -17,10 +17,14 @@ void file_histogram(char *file_name){
     fclose(file);
     for (int i = 0; i < 256; i++) {
         if (freq[i] > 0) {
-            printf("Frequency of symbol %c is %d\n", i, freq[i]);
+            printf("%c: ", i);
+            for (int j = 0; j < freq[i]; j++) {
+                printf("#");
+            }
+            printf(" %d\n", freq[i]);
         }
     }
-    return;
+
 }
 
 int main(){

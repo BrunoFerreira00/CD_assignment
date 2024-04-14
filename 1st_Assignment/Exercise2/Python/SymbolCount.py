@@ -17,12 +17,14 @@ def count_symbols(text):
 
 def main():
     text = readfile("example.txt")
+    per = 10
     if text:
         result = count_symbols(text)
         total_count = sum(result.values())
         for symbol, count in result.items():
             percentage = (count / total_count) * 100
-            print("{0}: {1}%".format(symbol, percentage))
+            if(percentage > per):
+                print("{0}: {1}%".format(symbol, percentage))
 
 if __name__ == "__main__":
     main()
