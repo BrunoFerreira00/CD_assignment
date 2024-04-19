@@ -1,9 +1,9 @@
 #include <stdio.h>
 
-void count_bits(int val){
-    int mask = 1;
-    int countOnes = 0;
-    int countZeros = 0;
+void count_bits(unsigned int val){
+    unsigned int mask = 1;
+    unsigned int countOnes = 0;
+    unsigned int countZeros = 0;
     while(val != 0){
         if (val & mask){
             countOnes++;
@@ -17,7 +17,7 @@ void count_bits(int val){
 }
 
 int main(){
-    int val = 5;
+    unsigned int val = 5;
     count_bits(val);
     return 0;
 }

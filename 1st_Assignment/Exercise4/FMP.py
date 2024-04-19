@@ -7,8 +7,8 @@ import math
 
 
 # Define the entropy function
-def entropy(p):
-    return -p * math.log2(p) 
+def entropy(probability):
+    return -sum([p * math.log2(p) for p in probability if p > 0])
 
 # Generate symbols based on the fmp where the keys will be the symbols and the values the probabilities ex: {'A': 0.5}
 def generateSymbols(FMP,N):
@@ -18,22 +18,25 @@ def generateSymbols(FMP,N):
     return np.random.choice(symbols, N, p=probabilities)
 
 # Calculate the entropy based on the FMP
-def calculateEntropy(FMP):
-    result = 0
-    for p in FMP.values():
-        result += entropy(p)
-    return result
+def calculateEntropy(symbolsDic):
+    symbols = list(symbolsDic)
+    frequency = {x: symbols.count(x) for x in symbols}
+    # Calculate the probability of each symbol
+    probability = {x: frequency[x] / len(symbols) for x in frequency}
+    # Calculate the entropy based on the probability
+    return entropy(probability.values())
+    
 
 
-FMP = {'A': 0.5, 'B': 0.3, 'C': 0.2}
+FMP = {'A': 0.5, 'B': 0.25, 'C': 0.125 , 'D': 0.125}
 
-N = 20
+N = 1000
 
 def main():
     gen = generateSymbols(FMP,N)
-    entropy = calculateEntropy(FMP)
+    entropyValue = calculateEntropy(gen)
     pprint.pprint(gen)
-    print("Entropy:", entropy)
+    print("Entropy:", entropyValue)
 
 
 if __name__ == "__main__":

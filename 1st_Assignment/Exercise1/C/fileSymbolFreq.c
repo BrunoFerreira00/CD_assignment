@@ -28,7 +28,7 @@ int file_symbol_freq( char *file_name, char symbol ){
 
 int main(){
     char *file_name = "example.txt";
-    char symbol = 'a';
+    char symbol = 'z';
     int freq = file_symbol_freq(file_name, symbol);
     if (freq == -1) {
         printf("Error: file not found or symbol not found\n");

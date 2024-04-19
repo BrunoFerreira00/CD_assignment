@@ -37,13 +37,17 @@ def encryptImage(image, output, key, area):
     encryptedImage = vernamCipher(image, key)
     saveImage(encryptedImage, output)
 
-# Decrypt the image using the same function as encryption
+# Decrypt the image(plain text) using the same function as encryption since after encryption it will generate another image(cipher text)
+# If vernamCipher is used to decrypt the image(cipher text) with the same key, it will generate the original image(plain text)
 def decryptImage(image, output, key, area):
     encryptImage(image, output, key, area)
 
 # Generate a random key with the same shape as the image
-def generateKeyShape(shape):
-    return np.random.randint(0, 256, shape, dtype=np.uint8)
+def generateKeyShape(shape,size):
+    if size is None:
+        return np.random.randint(0, 256, shape, dtype=np.uint8)
+    else:
+        return np.random.randint(0, 256, size, dtype=np.uint8)
 
 path_color = "Color Images.zip"
 path_gray = "Grayscale Images.zip"
@@ -75,7 +79,7 @@ def main():
                 image_path = os.path.join("color_images", filename)
                 image = loadImage(image_path)
                 area = desiredSize()
-                key = generateKeyShape(image.shape)
+                key = generateKeyShape(image.shape, area)
                 encryptImage(image, os.path.join(output_path_encrypted, f"{filename}_encrypted.tif"), key, area)
                 decryptImage(loadImage(os.path.join(output_path_encrypted, f"{filename}_encrypted.tif")), os.path.join(output_path_decrypted, f"{filename}_decrypted.tif"), key, area)
 
@@ -85,7 +89,7 @@ def main():
                 image_path = os.path.join("gray_images", filename)
                 image = loadImage(image_path)
                 area = desiredSize()
-                key = generateKeyShape(image.shape)
+                key = generateKeyShape(image.shape, area)
                 encryptImage(image, os.path.join(output_path_encrypted, f"{filename}_encrypted.png"), key, area)
                 decryptImage(loadImage(os.path.join(output_path_encrypted, f"{filename}_encrypted.png")), os.path.join(output_path_decrypted, f"{filename}_decrypted.png"), key, area)
 
