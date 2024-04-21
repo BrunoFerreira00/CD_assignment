@@ -17,7 +17,7 @@ def count_symbols(text):
 
 def main():
     text = readfile("example.txt")
-    per = 10
+    per = 5
     if text:
         result = count_symbols(text)
         total_count = sum(result.values())

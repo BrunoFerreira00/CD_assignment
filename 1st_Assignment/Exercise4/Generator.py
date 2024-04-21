@@ -62,7 +62,7 @@ for i in range(33,127):
     FMP_CHARS[chr(i)] = 1/94
 
 # Number of random pins, euro million codes and passwords to generate
-N = 50
+N = 10
 
 def main():
     pins = generatePin(N)

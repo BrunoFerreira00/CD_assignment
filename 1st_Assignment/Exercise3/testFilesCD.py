@@ -3,6 +3,7 @@
 import os
 import math
 import matplotlib.pyplot as plt
+import zipfile
 
 #Function to calculate the entropy = H(X) = -Σ p(x) * log2(p(x))
 def entropy(probability):
@@ -32,6 +33,7 @@ def histogram(text):
     return result
 
 def plotHistogram(hist, filename):
+    # Create a histogram based on the fequency(y-axis) of each character(x-axis)
     plt.bar(hist.keys(), hist.values(), color='g')
     plt.title("Histogram for file: " + filename)
     plt.xlabel("Characters")
@@ -40,8 +42,10 @@ def plotHistogram(hist, filename):
 
 #Function to open all files in the folder and calculate the entropy and histogram for each
 def openAllFiles():
-    for files in os.listdir('TestFilesCD'):
-        text = readfile(os.path.join('TestFilesCD/' + files))
+    with zipfile.ZipFile("TestFilesCD.zip", 'r') as zip_ref:
+            zip_ref.extractall("TestFilesCDFolder")
+    for files in os.listdir('TestFilesCDFolder'):
+        text = readfile(os.path.join('TestFilesCDFolder/' + files))
         hist = histogram(text)
         total = sum(hist.values())
         probability = {key : (value / total) for key , value in hist.items()}
@@ -52,6 +56,8 @@ def openAllFiles():
 
 def main():
     openAllFiles()
+    # Since the code is running in the terminal, made this to keep the plot open
+    # It will show the plot until the user closes it, after that it will show the next file plot
     plt.show()
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ void count_bits(unsigned int val){
 }
 
 int main(){
-    unsigned int val = 5;
+    unsigned int val = 7;
     count_bits(val);
     return 0;
 }

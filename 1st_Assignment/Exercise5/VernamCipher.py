@@ -29,33 +29,37 @@ def vernamCipher(image, key):
     return image ^ key
 
 # Encrypt the image using the Vernam cipher
-def encryptImage(image, output, key, area):
+def encryptImage(image, output, key, area=None):
     if area is not None:
         x1, y1, x2, y2 = area
-        image = image[y1:y2, x1:x2]
-        key = key[y1:y2, x1:x2]
-    encryptedImage = vernamCipher(image, key)
-    saveImage(encryptedImage, output)
+        encrypted_area = vernamCipher(image[y1:y2, x1:x2], key[:y2-y1, :x2-x1])
+        image[y1:y2, x1:x2] = encrypted_area
+    else:
+        image = vernamCipher(image, key)
+    saveImage(image, output)
 
-# Decrypt the image(plain text) using the same function as encryption since after encryption it will generate another image(cipher text)
-# If vernamCipher is used to decrypt the image(cipher text) with the same key, it will generate the original image(plain text)
-def decryptImage(image, output, key, area):
+
+# Decrypt the image using the Vernam cipher
+def decryptImage(image, output, key, area=None):
     encryptImage(image, output, key, area)
 
 # Generate a random key with the same shape as the image
-def generateKeyShape(shape,size):
-    if size is None:
+def generateKeyShape(shape, area=None):
+    if area is None:
         return np.random.randint(0, 256, shape, dtype=np.uint8)
     else:
-        return np.random.randint(0, 256, size, dtype=np.uint8)
+        x1, y1, x2, y2 = area
+        key_shape = list(shape)
+        key_shape[0] = y2 - y1
+        key_shape[1] = x2 - x1
+        return np.random.randint(0, 256, key_shape, dtype=np.uint8)
+
 
 path_color = "Color Images.zip"
 path_gray = "Grayscale Images.zip"
 
 output_path_encrypted = "output_encrypt"
 output_path_decrypted = "output_decrypt"
-
-
 
 if not os.path.exists(output_path_encrypted):
     os.makedirs(output_path_encrypted)
@@ -79,7 +83,7 @@ def main():
                 image_path = os.path.join("color_images", filename)
                 image = loadImage(image_path)
                 area = desiredSize()
-                key = generateKeyShape(image.shape, area)
+                key = generateKeyShape(image.shape)
                 encryptImage(image, os.path.join(output_path_encrypted, f"{filename}_encrypted.tif"), key, area)
                 decryptImage(loadImage(os.path.join(output_path_encrypted, f"{filename}_encrypted.tif")), os.path.join(output_path_decrypted, f"{filename}_decrypted.tif"), key, area)
 
@@ -89,7 +93,7 @@ def main():
                 image_path = os.path.join("gray_images", filename)
                 image = loadImage(image_path)
                 area = desiredSize()
-                key = generateKeyShape(image.shape, area)
+                key = generateKeyShape(image.shape)
                 encryptImage(image, os.path.join(output_path_encrypted, f"{filename}_encrypted.png"), key, area)
                 decryptImage(loadImage(os.path.join(output_path_encrypted, f"{filename}_encrypted.png")), os.path.join(output_path_decrypted, f"{filename}_decrypted.png"), key, area)
 

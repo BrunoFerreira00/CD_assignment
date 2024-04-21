@@ -6,13 +6,13 @@ void print_fibonacci(int n){
         for(int i = 0 ; i < n ; i ++){
         if (i == 0){
             fib[i] = 0;
-            printf("%d\n", fib[i]);
+            printf("%d ", fib[i]);
         } else if (i == 1 || i == 2){
             fib[i] = 1;
-            printf("%d\n", fib[i]);
+            printf("%d ", fib[i]);
         } else {
             fib[i] = fib[i-1] + fib[i-2];
-            printf("%d\n", fib[i]);
+            printf("%d ", fib[i]);
         }
     }
     free(fib);
