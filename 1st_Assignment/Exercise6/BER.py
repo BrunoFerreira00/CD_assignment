@@ -25,7 +25,6 @@ def inputSize():
             # Generate a random input sequence of 0s and 1s
             input_sequence = np.random.randint(0, 2, i)
             output_sequence = binarySymmetricChannel(input_sequence, p)
-            print ("Input Sequence:", input_sequence)
             print("BER:", BER(input_sequence, output_sequence))
 
 def compareFile():
@@ -44,7 +43,9 @@ def compareFile():
     
 
 def main():
+    print("Bit Sequence:")
     inputSize()
+    print("File:")
     compareFile()
 
 if __name__ == "__main__":

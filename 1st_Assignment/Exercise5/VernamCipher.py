@@ -94,6 +94,7 @@ def main():
                 image = loadImage(image_path)
                 area = desiredSize()
                 key = generateKeyShape(image.shape)
+                print(f"Encrypting {filename}...")
                 encryptImage(image, os.path.join(output_path_encrypted, f"{filename}_encrypted.png"), key, area)
                 decryptImage(loadImage(os.path.join(output_path_encrypted, f"{filename}_encrypted.png")), os.path.join(output_path_decrypted, f"{filename}_decrypted.png"), key, area)
 
