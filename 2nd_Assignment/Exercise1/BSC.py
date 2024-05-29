@@ -57,8 +57,8 @@ def simulationWithoutControl(file_name):
         output_sequence = bsc(binary_data, prob)
         output_data = binary_to_symbol(''.join(map(str, output_sequence)))
         
-        binary_array = np.array(list(binary_data), dtype=int)  # Convert binary data to array
-        output_array = np.array(output_sequence)  # Convert output sequence to array
+        binary_array = np.array(list(binary_data), dtype=int)  
+        output_array = np.array(output_sequence) 
         
         num_different_symbols = compare_symbols(input_data, output_data)
         print('BER` for p =', prob, 'is', ber(binary_array, output_array))
@@ -154,7 +154,7 @@ def simulationWithHamming(file_name):
         print("Simulation with Hamming for p =", prob)
         encoded_data = hammingEncoded(binary_data)
         output_sequence = bsc(encoded_data, prob)
-        decoded_data = hammingDecoded(''.join(map(str, output_sequence)))  # Corrected decoding function
+        decoded_data = hammingDecoded(''.join(map(str, output_sequence))) 
         output_data = binary_to_symbol(decoded_data)
         
         binary_array = np.array(list(binary_data), dtype=int)  # Convert binary data to array
