@@ -24,7 +24,7 @@ def binary_to_symbol(data):
     return ''.join(symbols)
    
 # Probability of error
-p = [0.1, 0.25, 0.35, 0.75]
+p = [0.05, 0.15, 0.35, 0.8]
 
 def bsc(data, p):
     # Create an array of zeros with the same length as the data
@@ -53,7 +53,7 @@ def simulationWithoutControl(file_name):
     binary_data = symbol_to_binary(input_data)
     
     for prob in p:
-        print("Simulation without control for p =", prob)
+        print("Without control for p =", prob)
         output_sequence = bsc(binary_data, prob)
         output_data = binary_to_symbol(''.join(map(str, output_sequence)))
         
@@ -61,7 +61,7 @@ def simulationWithoutControl(file_name):
         output_array = np.array(output_sequence) 
         
         num_different_symbols = compare_symbols(input_data, output_data)
-        print('BER` for p =', prob, 'is', ber(binary_array, output_array))
+        print('BER for p =', prob, 'is', ber(binary_array, output_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)  
  
@@ -94,7 +94,7 @@ def simulationWithRepetition(file_name):
     binary_data = symbol_to_binary(input_data)
     
     for prob in p:
-        print("Simulation with repetition for p =", prob)
+        print("Repetition for p =", prob)
         encoded_data = repetitionEncoded(binary_data)
         output_sequence = bsc(encoded_data, prob)
         decoded_data = repetitionDecoded(''.join(map(str, output_sequence)))  # Corrected decoding function
@@ -129,21 +129,41 @@ def hammingEncoded(data):
 def hammingDecoded(data):
     decoded_data = ''
     for i in range(0, len(data), 7):
-        bits = data[i:i+7]
+        bits = list(data[i:i+7])
         # Get the parity bits again to check syndrome
-        p0 = str(int(bits[1]) ^ int(bits[2]) ^ int(bits[3]))
-        p1 = str(int(bits[0]) ^ int(bits[1]) ^ int(bits[3]))
-        p2 = str(int(bits[0]) ^ int(bits[2]) ^ int(bits[3]))
-        # Get syndrome
-        s = p0 + p1 + p2
-        # Verify if there is an error, if it's different from 000, then there is an error
+        p0 = bits[4]
+        p1 = bits[5]
+        p2 = bits[6]
+        # Calculate the syndrome
+        s0 = str(int(bits[1]) ^ int(bits[2]) ^ int(bits[3]) ^ int(p0))
+        s1 = str(int(bits[0]) ^ int(bits[1]) ^ int(bits[3]) ^ int(p1))
+        s2 = str(int(bits[0]) ^ int(bits[2]) ^ int(bits[3]) ^ int(p2))
+        # Combine syndrome bits
+        s = s0 + s1 + s2
+
+        # Syndrome table
+        syndrome = {
+            '011': 0,
+            '110': 1,
+            '101': 2,
+            '111': 3,
+            '100': 4,
+            '010': 5,
+            '001': 6,
+            '000': -1  # No error
+        }
+        
+        # Check if there is an error
         if s != '000':
-            error_pos = int(s, 2)
+            error_position = syndrome[s]
             # Correct the error
-            if error_pos < len(bits):
-                bits = bits[:error_pos] + str(1 - int(bits[error_pos])) + bits[error_pos+1:]
-        decoded_data += bits[0] + bits[1] + bits[2] + bits[3]
+            bits[error_position] = str(1 - int(bits[error_position]))
+        
+        # Extract the original data bits (first 4 bits)
+        decoded_data += ''.join(bits[:4])
     return decoded_data
+                            
+    
 
 
 def simulationWithHamming(file_name):
@@ -151,23 +171,20 @@ def simulationWithHamming(file_name):
     binary_data = symbol_to_binary(input_data)
     
     for prob in p:
-        print("Simulation with Hamming for p =", prob)
+        print("Hamming for p =", prob)
         encoded_data = hammingEncoded(binary_data)
         output_sequence = bsc(encoded_data, prob)
         decoded_data = hammingDecoded(''.join(map(str, output_sequence))) 
         output_data = binary_to_symbol(decoded_data)
         
-        binary_array = np.array(list(binary_data), dtype=int)  # Convert binary data to array
-        output_array = np.array(list(decoded_data), dtype=int)  # Convert decoded data to array
+        binary_array = np.array(list(binary_data), dtype=int)  
+        output_array = np.array(list(decoded_data), dtype=int) 
         
         num_different_symbols = compare_symbols(input_data, output_data)
         print('BER for p =', prob, 'is', ber(binary_array, output_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)
-## The hamming code has a higher BER , because it depends on the syndrome to correct the error
-# If there are 2 errors in the 7 bits, it won't be able to correct it, because the syndrome will be the same as if there was just 1 error
-# Also to not detect errors, the syndrome needs to be 000, if it's different from that, it will detect an error
-# Because of this it has a higher BER than the repetition code , but a lower BER than the one without control
+
 
 def main():
     file_name = 'test.txt'  

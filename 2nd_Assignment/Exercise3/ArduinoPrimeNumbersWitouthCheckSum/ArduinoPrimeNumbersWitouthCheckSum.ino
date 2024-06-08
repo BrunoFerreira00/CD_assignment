@@ -45,6 +45,8 @@ void loop() {
     user_input_received = false;
     // Send a confirmation message so the Python script knows all numbers have been sent
     Serial.println("Done!");
+    delay(1000);
+    exit(0);
   }
 }
 
