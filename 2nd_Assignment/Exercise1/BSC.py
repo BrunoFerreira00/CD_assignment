@@ -1,8 +1,9 @@
 import numpy as np
+import os
 
 # Read file
 def process_file(file_name):
-    with open(file_name) as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         data = f.read()
     return data
 
@@ -10,27 +11,22 @@ def process_file(file_name):
 def symbol_to_binary(data):
     binary_data = []
     for symbol in data:
-        # Format the symbol to 8 bits by the unicode value of each symbol
         binary_data.append(format(ord(symbol), '08b'))
     return ''.join(binary_data)
 
 # Convert binary to symbols
 def binary_to_symbol(data):
     symbols = []
-    # Convert binary data to symbols , 8 bits at a time
     for i in range(0, len(data), 8):
-        # Convert 8 bits to unicode value and then to symbol
         symbols.append(chr(int(data[i:i+8], 2)))
     return ''.join(symbols)
-   
+
 # Probability of error
 p = [0.05, 0.15, 0.35, 0.8]
 
 def bsc(data, p):
-    # Create an array of zeros with the same length as the data
     output_sequence = np.zeros(len(data), dtype=int)
     for i in range(len(data)):
-        # If the random number is less than p, flip the bit
         if np.random.rand() < p:
             output_sequence[i] = 1 - int(data[i])
         else:
@@ -43,7 +39,6 @@ def ber(input, output):
 
 # Compare symbols
 def compare_symbols(input_symbols, output_symbols):
-    # Compare the input and output symbols and count the number of different symbols
     num_different_symbols = sum(1 for a, b in zip(input_symbols, output_symbols) if a != b)
     return num_different_symbols
 
@@ -57,31 +52,32 @@ def simulationWithoutControl(file_name):
         output_sequence = bsc(binary_data, prob)
         output_data = binary_to_symbol(''.join(map(str, output_sequence)))
         
-        binary_array = np.array(list(binary_data), dtype=int)  
-        output_array = np.array(output_sequence) 
+        binary_array = np.array(list(binary_data), dtype=int)
+        output_array = np.array(output_sequence)
         
         num_different_symbols = compare_symbols(input_data, output_data)
         print('BER for p =', prob, 'is', ber(binary_array, output_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
-        print('-'*20)  
- 
+        print('-'*20)
+        
+        # Create directory if not exists
+        os.makedirs('output_without_control', exist_ok=True)
+        
+        # Write the output data to a file
+        with open(f'output_without_control/output_without_control_p_{prob}.txt', 'w', encoding='utf-8') as f:
+            f.write(output_data)
 
 # Repetition code(3, 1) for error correction
 def repetitionEncoded(data):
-        encoded_data = ''
-        # Repeat each bit 3 times, since we are using (3, 1) repetition code
-        # With 1 bit we have a message of 3 bits, soo we repeat each bit 3 times
-        for i in range(0, len(data)):
-            encoded_data += data[i] * 3
-        return encoded_data
+    encoded_data = ''
+    for i in range(0, len(data)):
+        encoded_data += data[i] * 3
+    return encoded_data
 
 def repetitionDecoded(data):
     decoded_data = ''
     for i in range(0, len(data), 3):
-        # Take 3 bits at a time
         bits = data[i:i+3]
-        # If the 3 bits have more 1's than 0's, then the decoded bit is 1 else 0
-        # Because of majority voting, the bit with the most occurence is the correct bit
         if bits.count('1') > 1:
             decoded_data += '1'
         else:
@@ -97,32 +93,31 @@ def simulationWithRepetition(file_name):
         print("Repetition for p =", prob)
         encoded_data = repetitionEncoded(binary_data)
         output_sequence = bsc(encoded_data, prob)
-        decoded_data = repetitionDecoded(''.join(map(str, output_sequence)))  # Corrected decoding function
+        decoded_data = repetitionDecoded(''.join(map(str, output_sequence)))
         output_data = binary_to_symbol(decoded_data)
         
-        binary_array = np.array(list(binary_data), dtype=int)  # Convert binary data to array
-        output_array = np.array(list(decoded_data), dtype=int)  # Convert decoded data to array
+        binary_array = np.array(list(binary_data), dtype=int)
+        output_array = np.array(list(decoded_data), dtype=int)
         
         num_different_symbols = compare_symbols(input_data, output_data)
         print('BER for p =', prob, 'is', ber(binary_array, output_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)
-## For the repetion code, since it goes by majority voting, the error rate is lower than the one without control
-# Because this one is able to correct if there's just 1 error in the 3 bits, however, if there are 2 errors, it won't be able to correct it
-
+        
+        # Create directory if not exists
+        os.makedirs('output_with_repetition', exist_ok=True)
+        
+        # Write the output data to a file
+        with open(f'output_with_repetition/output_with_repetition_p_{prob}.txt', 'w', encoding='utf-8') as f:
+            f.write(output_data)
 
 def hammingEncoded(data):
-    # Create a 7 bit Hamming code
-    # The first 4 bits are the data bits, the next 3 bits are the parity
     encoded_data = ''
     for i in range(0, len(data), 4):
-        # Take 4 bits at a time
         bits = data[i:i+4]
-        # Calculate the parity bits (this xors are in the pdf given by the teacher)
         p0 = str(int(bits[1]) ^ int(bits[2]) ^ int(bits[3]))
         p1 = str(int(bits[0]) ^ int(bits[1]) ^ int(bits[3]))
         p2 = str(int(bits[0]) ^ int(bits[2]) ^ int(bits[3]))
-        # Append the data bits and parity bits
         encoded_data += bits + p0 + p1 + p2
     return encoded_data
 
@@ -130,18 +125,14 @@ def hammingDecoded(data):
     decoded_data = ''
     for i in range(0, len(data), 7):
         bits = list(data[i:i+7])
-        # Get the parity bits again to check syndrome
         p0 = bits[4]
         p1 = bits[5]
         p2 = bits[6]
-        # Calculate the syndrome
         s0 = str(int(bits[1]) ^ int(bits[2]) ^ int(bits[3]) ^ int(p0))
         s1 = str(int(bits[0]) ^ int(bits[1]) ^ int(bits[3]) ^ int(p1))
         s2 = str(int(bits[0]) ^ int(bits[2]) ^ int(bits[3]) ^ int(p2))
-        # Combine syndrome bits
         s = s0 + s1 + s2
 
-        # Syndrome table
         syndrome = {
             '011': 0,
             '110': 1,
@@ -150,21 +141,15 @@ def hammingDecoded(data):
             '100': 4,
             '010': 5,
             '001': 6,
-            '000': -1  # No error
+            '000': -1
         }
         
-        # Check if there is an error
         if s != '000':
             error_position = syndrome[s]
-            # Correct the error
             bits[error_position] = str(1 - int(bits[error_position]))
         
-        # Extract the original data bits (first 4 bits)
         decoded_data += ''.join(bits[:4])
     return decoded_data
-                            
-    
-
 
 def simulationWithHamming(file_name):
     input_data = process_file(file_name)
@@ -174,22 +159,29 @@ def simulationWithHamming(file_name):
         print("Hamming for p =", prob)
         encoded_data = hammingEncoded(binary_data)
         output_sequence = bsc(encoded_data, prob)
-        decoded_data = hammingDecoded(''.join(map(str, output_sequence))) 
+        decoded_data = hammingDecoded(''.join(map(str, output_sequence)))
         output_data = binary_to_symbol(decoded_data)
         
-        binary_array = np.array(list(binary_data), dtype=int)  
-        output_array = np.array(list(decoded_data), dtype=int) 
+        binary_array = np.array(list(binary_data), dtype=int)
+        output_array = np.array(list(decoded_data), dtype=int)
         
         num_different_symbols = compare_symbols(input_data, output_data)
         print('BER for p =', prob, 'is', ber(binary_array, output_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)
-
+        
+        # Create directory if not exists
+        os.makedirs('output_with_hamming', exist_ok=True)
+        
+        # Write the output data to a file
+        with open(f'output_with_hamming/output_with_hamming_p_{prob}.txt', 'w', encoding='utf-8') as f:
+            f.write(output_data)
 
 def main():
     file_name = 'test.txt'  
     simulationWithoutControl(file_name)
     simulationWithRepetition(file_name)
     simulationWithHamming(file_name)
+
 if __name__ == "__main__":
     main()
