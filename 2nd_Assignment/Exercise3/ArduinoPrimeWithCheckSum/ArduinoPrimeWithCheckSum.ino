@@ -1,27 +1,25 @@
-// Verify if it's prime
-bool isPrime(int num){
+bool isPrime(int num) {
   if (num == 1) return false;
-  for(int i = 2; i < num; i++){
-    if(num % i == 0) return false;
+  for (int i = 2; i < num; i++) {
+    if (num % i == 0) return false;
   }
   return true;
 }
 
-unsigned int calculateChecksum(int number) {
+unsigned int calculateChecksum(const unsigned int* data, int length) {
   unsigned long sum = 0;
-  while (number) {
-    sum += number & 0xFFFF;
-    number >>= 16;
-  }
-  while (sum >> 16) {
-    sum = (sum & 0xFFFF) + (sum >> 16);
+  for (int i = 0; i < length; i++) {
+    sum += data[i];
+    while (sum >> 16) {
+      sum = (sum & 0xFFFF) + (sum >> 16);
+    }
   }
   return ~sum & 0xFFFF;
 }
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial){
+  while (!Serial) {
     ;
   }
   Serial.println("Arduino is ready");
@@ -30,9 +28,11 @@ void setup() {
 void loop() {
   static bool user_input_received = false;
   static int N;
+  const int max_primes = 100;
+  static unsigned int primes[max_primes];
+  static int prime_count = 0;
 
   if (!user_input_received) {
-    // Read the input
     if (Serial.available() > 0) {
       N = Serial.parseInt();
       Serial.print("Received N: ");
@@ -40,29 +40,32 @@ void loop() {
       user_input_received = true;
     }
   } else {
-    // Start at the first number
-    static int current_number = 2;  
+    static int current_number = 2;
 
-    // Verify if the numbers from 2 to N are prime, if it is, print the number
     while (current_number <= N) {
       if (isPrime(current_number)) {
-        unsigned int checksum = calculateChecksum(current_number);
-        
-        Serial.print("Number: ");
-        Serial.print(current_number);
-        Serial.print(" checksum: ");
-        Serial.println(checksum);
-        // Delay between prime numbers
-        delay(500);
+        if (prime_count < max_primes) {
+          primes[prime_count++] = current_number;
+        }
       }
-      current_number++; 
+      current_number++;
     }
 
-    // Once all prime numbers up to N have been sent, set input to false
-    user_input_received = false;
-    // Send a confirmation message so the Python script knows all numbers have been sent
-    Serial.println("Done!");
-    delay(1000);
-    exit(0);
+    if (current_number > N) {
+      unsigned int checksum = calculateChecksum(primes, prime_count);
+
+      for (int i = 0; i < prime_count; i++) {
+        Serial.println(primes[i]);
+        delay(100);
+      }
+
+      Serial.print("Checksum: ");
+      Serial.println(checksum);
+
+      Serial.println("Done!");
+      user_input_received = false;
+      prime_count = 0;
+      current_number = 2;
+    }
   }
 }

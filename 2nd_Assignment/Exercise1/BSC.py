@@ -22,7 +22,7 @@ def binary_to_symbol(data):
     return ''.join(symbols)
 
 # Probability of error
-p = [0.05, 0.15, 0.35, 0.8]
+p = [0.2]
 
 def bsc(data, p):
     output_sequence = np.zeros(len(data), dtype=int)
@@ -98,9 +98,11 @@ def simulationWithRepetition(file_name):
         
         binary_array = np.array(list(binary_data), dtype=int)
         output_array = np.array(list(decoded_data), dtype=int)
+        decoded_array = np.array(list(decoded_data), dtype=int)
         
         num_different_symbols = compare_symbols(input_data, output_data)
-        print('BER for p =', prob, 'is', ber(binary_array, output_array))
+        print('BER for p =', prob, 'is', ber(encoded_data, decoded_data))
+        print('BER-Line for p =', prob, 'is', ber(binary_array, decoded_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)
         
@@ -164,9 +166,11 @@ def simulationWithHamming(file_name):
         
         binary_array = np.array(list(binary_data), dtype=int)
         output_array = np.array(list(decoded_data), dtype=int)
+        decoded_array = np.array(list(decoded_data), dtype=int)
         
         num_different_symbols = compare_symbols(input_data, output_data)
-        print('BER for p =', prob, 'is', ber(binary_array, output_array))
+        print('BER for p =', prob, 'is', ber(encoded_data, decoded_data))
+        print('BER-Line for p =', prob, 'is', ber(binary_array, decoded_array))
         print('Different symbols for p =', prob, 'is', num_different_symbols)  
         print('-'*20)
         
@@ -178,8 +182,9 @@ def simulationWithHamming(file_name):
             f.write(output_data)
 
 def main():
+    np.random.seed(1)
     file_name = 'test.txt'  
-    simulationWithoutControl(file_name)
+    #simulationWithoutControl(file_name)
     simulationWithRepetition(file_name)
     simulationWithHamming(file_name)
 

@@ -1,7 +1,7 @@
 import numpy as np
 
 # Length of the error burst
-L = [2, 4, 6, 8]
+L = [32]
 
 def bsc(data, p, burst_length):
     # Create a copy of the data to produce the output sequence
@@ -79,16 +79,17 @@ def simulateCRC(sequence, p, polynomial):
 
 def main():
     # CRC32 polynomial
-    polynomial = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], dtype=int)
+    polynomial = np.array([1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1], dtype=int)
     
     # Get a random sequence of 64 bits
-    sequence = np.random.randint(0, 2, 64)
+    # sequence = np.random.randint(0, 2, 64)
+    sequence = [0,0,0,0,0,0,0,1]
     
     # Append CRC to the sequence
     sequence_with_crc = append_crc(sequence, polynomial)
     
     # Simulate burst errors and CRC checking
-    simulateBurstError(sequence_with_crc, 0.1)
+    #simulateBurstError(sequence_with_crc, 0.1)
     # Since CRC is extremely reliable to detect errors, the probability needs to be around 0.01 to get examples of errors and no errors
     # Anything from above from 0.05 CRC always detects errors (from my tests)
     simulateCRC(sequence_with_crc, 0.1, polynomial)
